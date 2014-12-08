@@ -1,0 +1,328 @@
+<template name="main">
+    <div class="container">
+    <div class="row toprow">
+      <div class="col-md-4">
+        <h2 style="margin-top: 60px; margin-bottom: 0">Prestige: {{player.prestige}}</h2>
+        <p>Prestige increase per Minute: {{prestigeIncrease}}</p>
+        {{> prestige}}
+      </div>
+      <div class="col-md-3">
+        {{> run}}
+      </div>
+      <div class="col-md-4">
+        {{> progress}}
+      </div>
+    </div>
+    <div class="row middlerow">
+      <div class="col-md-4">
+        {{> vendor}}
+        <div class="goldAmount">Gold: {{player.gold}}</div>
+      </div>
+      <div class="col-md-3">
+        {{> hero}}
+      </div>
+      <div class="col-md-5">
+        {{> stockpile}}
+      </div>
+    </div>
+    <div class="row bottomrow">
+      <div class="col-md-4 player">
+        <h3>Hero Stats</h3>
+        {{> heroStats}}
+        <h3>Options</h3>
+        {{> options}}
+      </div>
+      <div class="col-md-8">
+        {{> inventory}}
+      </div>
+    </div>
+  </div>
+  {{> intro}}
+  {{> highscores}}
+</template>
+
+<template name="run">
+  <div class="dungeonEntrance">
+    <div class="dungeonEntranceLabel">
+      {{#if player.currentDungeon}}
+        leave dungeon
+      {{else}}
+        enter dungeon
+      {{/if}}
+    </div>
+  </div>
+</template>
+
+<template name="progress">
+  <h3>&nbsp;</h3>
+  <div class="progressBar row">
+    <div class="col-md-3">
+      <span>Progress: <br>Level: {{player.dungeonDifficulty}}</span>
+    </div>
+    <div class="col-md-2">
+      {{#if player.currentDungeon}}
+      {{roomsCleared}}/{{roomsCount}}
+      {{/if}}
+    </div>
+    <div class="col-md-7">
+      {{#if player.currentDungeon}}
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: {{roomsclearedpercentage}}%;">
+        </div>
+      </div>
+      {{else}}
+      not in dungeon
+      {{/if}}
+    </div>
+  </div>
+  <div class="progressMeter">
+  {{#if player.currentDungeon}}
+    <div class="progressBox heroprogress">&nbsp;</div>
+    {{#each dungeonProgress}}
+      {{> progressBox this}}
+    {{/each}}
+  {{/if}}
+  </div>
+  <div class="staminaBar row">
+    <div class="col-md-2">
+      <span>Stamina:</span>
+    </div>
+    <div class="col-md-10">
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{staminapercentage}}%;">
+          <span>{{hero.stamina}} / {{hero.staminaMax}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="healthBar row">
+    <div class="col-md-2">
+      <span>Health:</span>
+    </div>
+    <div class="col-md-10">
+      <div class="progress">
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width: {{healthpercentage}}%;">
+          <span>{{hero.health}} / {{hero.healthMax}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="progressBox">
+  <div class="progressBox {{type}}">&nbsp;</div>
+</template>
+
+<template name="stockpile">
+  <div class="stockpile" data-dragfrom="stockpile">
+    {{#each stockpileStash}}
+      {{> item this}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="item">
+  {{#if inChest}}
+    <div class="item inChest" id="{{_id}}"></div>
+  {{else}}
+    {{#if name}}
+    <div class="item popoverItem r{{rarity}}" id="{{_id}}" style="background-image: url('/resources/item_{{image}}.png')" data-content="
+    <table>
+    <tr class='stat'>
+      <td class='statLabel'>Slot:</div>
+      <td class='statValue'>{{slot}}</div>
+      <td class='statChange'> </div>
+    </tr>
+    <tr class='stat'>
+      <td class='statLabel'>Stamina:</td>
+      <td class='statValue'>{{stamina}}</td>
+      <td class='statChange'>{{statsChange typ='stamina' slot=slot value=stamina}}</td>
+    </tr>
+    <tr class='stat'>
+      <td class='statLabel'>Health:</td>
+      <td class='statValue'>{{health}}</td>
+      <td class='statChange'>{{statsChange typ='health' slot=slot value=health}}</td>
+    </tr>
+    <tr class='stat'>
+      <td class='statLabel'>Attack:</td>
+      <td class='statValue'>{{attack}}</td>
+      <td class='statChange'>{{statsChange typ='attack' slot=slot value=attack}}</td>
+    </tr>
+    <tr class='stat'>
+      <td class='statLabel'>Defense:</td>
+      <td class='statValue'>{{defense}}</td>
+      <td class='statChange'>{{statsChange typ='defense' slot=slot value=defense}}</td>
+    </tr>
+    <tr class='stat'>
+      <td class='statLabel'>Value:</td>
+      <td class='statValue'>{{value}}</td>
+      <td class='statChange'>{{statsChange typ='value' slot=slot value=value}}</td>
+    </tr>
+    <tr class='stat'>
+      <td class='statLabel'>Prestige:</td>
+      <td class='statValue'>{{prestigeModifier}}</td>
+      <td class='statChange'>{{statsChange typ='prestigeModifier' slot=slot value=prestigeModifier}}</td>
+    </tr>
+    </table>
+    " title="{{name}}" data-price="{{price}}">
+      <div class="prestigeModifier">
+        <span>Prestige<br/>{{prestigeModifier}}x</span>
+      </div>
+      <div class="price">
+        <span>Price<br/>{{price}} gold</span>
+      </div>
+    </div>
+    {{/if}}
+  {{/if}}
+</template>
+
+<template name="inventory">
+  <div class="inventory" data-dragfrom="inventory">
+    {{#each inventoryStash}}
+      {{> item this}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="vendor">
+  <div class="vendor" data-dragfrom="vendor">
+    {{#each shopStash}}
+      {{> item this}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="prestige">
+  <button class="buyPrestige">
+    Buy 1 Prestige Base for {{prestigePrice}} Gold
+  </button><br>
+</template>
+
+<template name="options">
+  <button type="button" data-toggle="modal" data-target="#introDialog">Show Intro / Help</button>
+  <button type="button" data-toggle="modal" data-target="#highscores">Show Scoreboard</button>
+</template>
+
+<template name="highscores">
+  <div class="modal fade" id="highscores">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Coward High Scores</h4>
+        </div>
+        <div class="modal-body">
+          <p>Maybe someone cheated... Anyway, here are the top 100 (or less) players.</p>
+          <ol>
+          {{#each highscores}}
+            <li>{{prestige}} - {{name}}</li>
+          {{/each}}
+          </ol>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="intro">
+  <div class="modal fade" id="introDialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Welcome to Coward - a Ludum Dare 31 Game</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-2">
+              <div class="playerImage"></div>
+              <p class="italic">You. Yeah, really...</p>
+            </div>
+            <div class="col-md-4">
+              <p>Give me a name!</p>
+              <input type="text" name="name" placeholder="Just a name..." class="form-control" value="{{player.name}}">
+            </div>
+            <div class="col-md-6">
+              <h4>What is Ludum Dare?</h4>
+              <p>Ludum Dare is a game programming contest. This game was part of Ludum Dare 31 and was made in under 48 hours by Thomas Diehl (<a href="http://twitter.com/dievo" target="_blank">@dievo</a>).</p>
+              <p>The source code is available here: Github Sourcecode.</p>
+              <p>Genre: Waiting Game / Cookie Clicker / Adventure (thanks to ExtraCredits for the recent youtube episode on waiting games)</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <h3>The Story</h3>
+              <p style="font-style:italic">Everyone wants to be the hero. Unfortunately, you are a coward. You are not going to get beaten up in dark and dangerous dungeons. But you want to impress everyone with the treasures lying deep inside the deepest dungeon of epic deepness.</p>
+              <p style="font-style:italic">Luckily, the might you are missing in your arms you got in your head. You brought your good old pal 'Hero Mc Herosen' of the 'Heroic Hero Order of Heroes' with you, so he will get beaten up and you will get all treasure. Isn't that cool?</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h3>Instructions</h3>
+              <p>Your task is to gain as much prestige points as possible and compete with others around the globe.</p>
+              <p>Enter the Dungeon with Hero by clicking on the Dungeon Entrace. Hero will now try to get treasure chests, gold and more from the dungeon. You can watch his journey in the top right corner. Every once in a while, Hero finds a chest which will get teleported to your stockpile.</p>
+              <p>Open a chest by clicking on it. Every item serves three purposes:</p>
+              <ul>
+                <li>- Sell the item for gold by dragging it on the store</li>
+                <li>- Put the item in your trophy display to gain a higher prestige multiplicator (the more epic the item is, the higher is the multiplicator)</li>
+                <li>- or equip Hero with the item to help him delve into the deep dark dungeon.</li>
+              </ul>
+            </div>
+            <div class="col-md-6" style="text-align:center">
+              <h3>&nbsp;</h3>
+              <div class="dungeonEntranceImage"></div>
+              <p class="italic">The Dungeon Entrance. Very Scary!</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h4>The Stockpile</h4>
+              <p>Chests Hero finds in the Dungeon will be put on the stockpile. You can open them there and then drag the item in your trophy display, on one of Hero's equipment slots or sell it by draging it on the store. Once the stockpile is full of chests or items (max. 10), new found chests are automatically sold to the vendor for 5% of the item value. Very bad deal.</p>
+              <div class="center">
+                <div class="chestImage"></div>
+                <p class="italic">Click to Open! (Not this one, you dummy...)</p>
+              </div>
+              <h4>The Trophy Display</h4>
+              <p>Use Items in your trophy display to increase the prestige multiplicator. The display can hold up to 16 items. The more rare the item is, the greater it's prestige.</p>
+              <h4>The Store</h4>
+              <p>This vendor sells Items and buys everything you find in the Dungeon.</p>
+              <h3>Bugs and unfinished things</h3>
+              <p>In 48 hours, it is really hard to build a multiplayer game on a platform you are not familiar with ("meteor js in my case"). Therefore, not everything works.</p>
+              <p>Scores: Please do not cheat :-) Yes it is possible, just don't do it.</p>
+              <p>Content: there are only a few items and dungeons available. Don't expect a 30 hour experience.</p>
+              <p>Dungeon Feedback: Could be better :) Maybe I'll add a log later.</p>
+              <p>Known Bugs:</p>
+              <ul>
+                <li>- Only works in Chrome, did not test other browsers</li>
+                <li>- Equipment will be lost if dragged into wrong equipment slot</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h4>Gaining Prestige</h4>
+              <p>You can increase your prestige gain per minute with the following actions:</p>
+              <ul>
+                <li>- Put an Item in your trophy display to gain a higher prestige multiplicator</li>
+                <li>- buy a prestige base for gold in the lower left section of the screen</li>
+                <li>- each dungeon level also affects the prestige. The deeper, the better.</li>
+              </ul>
+              <h4>The Dungeon</h4>
+              <p>Hero will go through the Dungeon on his own. By dragging items on his equipment slots, you make him stronger.</p>
+              <div class="center">
+                <div class="heroImage"></div>
+                <p class="italic">'Hero Mc Herosen' of the 'Heroic Hero Order of Heroes', at your service!</p>
+              </div>
+              <p>If his stamina runs out, he will start on the same level at the entrance again</p>
+              <p>If his health drops to 0, he will go one level up and try again.</p>
+              <p>If you click leave Dungeon, you can change his equipment, but you will have to start at dungeon level 1 again.</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Save name and continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,47 @@
+<template name="heroStats">
+  <ul>
+    <li>Health: {{hero.healthMax}} | Stamina: {{hero.staminaMax}}</li>
+    <li>Attack: {{hero.attack}} | Defense: {{hero.defense}}</li>
+  </ul>
+</template>
+
+<template name="hero">
+  <div class="hero">
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        <div class="equipmentslot" data-dragfrom="equipmentslot">
+          {{> item hero.itemHead}}
+        </div>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+       <div class="equipmentslot" data-dragfrom="equipmentslot">
+          {{> item hero.itemLeftHand}}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="equipmentslot" data-dragfrom="equipmentslot">
+          {{> item hero.itemChest}}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="equipmentslot" data-dragfrom="equipmentslot">
+          {{> item hero.itemRightHand}}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        <div class="equipmentslot" data-dragfrom="equipmentslot">
+          {{> item hero.itemPants}}
+        </div>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+</template>
